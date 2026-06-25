@@ -241,3 +241,5 @@ footer.site .legal{border-top:1px solid #3a2f22;margin-top:34px;padding-top:18px
 .article ul{margin:0 0 18px;padding-left:22px}
 .article li{margin:7px 0}
 .article .lead{font-size:21px;color:#42382a}
+
+.float-trust .big,.float-trust .sm{display:block}
