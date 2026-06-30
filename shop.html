@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shop | R Ranch Enterprises — Saddles, Tack, Hats &amp; Western Goods, Caldwell ID</title>
-<meta name="description" content="Shop R Ranch Enterprises online: new and used saddles, tack, cowboy hats, turquoise jewelry, purses and gifts. Reserve online for in-store pickup or shipping from Caldwell, Idaho.">
+<meta name="description" content="Shop R Ranch Enterprises online: new and used saddles, tack, cowboy hats, turquoise jewelry, purses and gifts. Buy online for shipping or in-store pickup from Caldwell, Idaho.">
 <link rel="canonical" href="https://r-ranch-western.vercel.app/shop.html">
 <meta property="og:title" content="Shop R Ranch Enterprises — Western Store, Caldwell ID">
-<meta property="og:description" content="Saddles, tack, hats, turquoise jewelry and gifts. Reserve online for pickup or shipping.">
+<meta property="og:description" content="Saddles, tack, hats, turquoise jewelry and gifts. Buy online for shipping or pickup.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -21,7 +21,10 @@
 .shophero h1{font-family:'Fraunces';font-weight:600;font-size:clamp(30px,5vw,46px);margin:8px 0 10px;line-height:1.05}
 .shophero p{color:rgba(247,240,225,.82);max-width:620px;font-size:16px}
 .shophero .meta{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px 22px;font-size:13.5px;color:rgba(247,240,225,.7)}
-#dept-filter{display:flex;gap:8px;flex-wrap:wrap;padding:22px 0 6px}
+#dept-filter{display:flex;gap:8px;flex-wrap:wrap;padding:10px 0 6px}
+.shoptools{padding:16px 0 0}
+#shop-search{width:100%;max-width:440px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:11px 18px;font:400 15px Inter;color:var(--ink)}
+#shop-search:focus{outline:0;border-color:var(--accent)}
 .chip{font:600 13.5px Inter;padding:8px 15px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--muted);cursor:pointer;transition:.15s}
 .chip:hover{border-color:var(--accent);color:var(--accent-deep)}
 .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -129,20 +132,19 @@
   <section class="shophero">
     <div class="wrap" style="display:block">
       <span class="eyebrow">Shop the store</span>
-      <h1>Western goods, reserved online.</h1>
-      <p>Browse saddles, tack, hats, turquoise jewelry and gifts from our Caldwell shop. Reserve online for in-store pickup or shipping. We confirm availability and arrange payment personally, no surprises.</p>
+      <h1>Western goods, now online.</h1>
+      <p>Shop saddles, tack, hats, turquoise jewelry and gifts from our Caldwell store. Buy online for shipping or in-store pickup, secure checkout, real Idaho hospitality.</p>
       <div class="meta"><span>New &amp; used saddles</span><span>In-store saddle try-out</span><span>Pickup or shipping</span><span>4.7 stars · 101 Google reviews</span></div>
     </div>
   </section>
-  <section style="background:var(--cream)">
+  <section style="background:var(--cream);padding:14px 0 0">
     <div class="wrap" style="display:block">
+      <div class="shoptools"><input id="shop-search" type="search" placeholder="Search the shop…" aria-label="Search products" autocomplete="off"></div>
       <div id="dept-filter"></div>
       <div id="product-grid" class="pgrid"></div>
     </div>
   </section>
 </main>
-<button id="cart-fab" class="cart-fab"></button>
-<div id="cart-drawer" class="drawer-wrap"></div>
 <div id="sheet" class="sheet-wrap"></div>
 <div id="confirm" class="conf-wrap"></div>
 <footer class="site" id="site-footer"></footer>

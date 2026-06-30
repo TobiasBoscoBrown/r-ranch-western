@@ -86,7 +86,9 @@ function header(active){
   const links=[["index.html","Home"],["services.html","Departments"],["shop.html","Shop"],["blog.html","Saddle Up Journal"],["index.html#visit","Visit"]];
   const nav = links.map(l=>`<a href="${l[0]}"${active===l[0]?' aria-current="page"':''}>${l[1]}</a>`).join('');
   const st=openStatus();
+  const ship='<span>Free Shipping on Orders Over $20</span>';
   return `
+  <div class="shipbar" aria-label="Free shipping over twenty dollars"><div class="shiptrack">${ship.repeat(8)}${ship.repeat(8)}</div></div>
   <div class="topbar"><div class="wrap">
     <span class="tb-item">${ic('pin')} ${BIZ.addr}, ${BIZ.city}, ${BIZ.state}</span>
     <span class="tb-item"><span class="dot"></span> ${st.txt} · Mon to Sat</span>
@@ -103,7 +105,9 @@ function header(active){
       <button class="burger" aria-label="Open menu" aria-expanded="false">${ic('menu')}</button>
     </div>
     <nav class="mobnav" aria-label="Mobile">${nav}<a href="tel:${BIZ.tel}">Call ${BIZ.phone}</a></nav>
-  </header>`;
+  </header>
+  <button id="cart-fab" class="cart-fab"></button>
+  <div id="cart-drawer" class="drawer-wrap"></div>`;
 }
 
 function brandmark(){
