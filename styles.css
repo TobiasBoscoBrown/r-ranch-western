@@ -79,8 +79,8 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(247,240,225,.92);ba
 /* Shipping banner */
 .shipbar{background:var(--accent);color:#fff;overflow:hidden}
 .shipbar .shiptrack{display:flex;white-space:nowrap;animation:scroll 13s linear infinite;will-change:transform}
-.shipbar span{padding:9px 0;font:700 12px/1 Inter;letter-spacing:.14em;text-transform:uppercase;display:inline-flex;align-items:center;gap:30px}
-.shipbar span::after{content:"\2605";color:rgba(255,255,255,.65);font-size:9px}
+.shipbar span{padding:9px 0;font:700 12px/1 Inter;letter-spacing:.14em;text-transform:uppercase;display:inline-flex;align-items:center}
+.shipbar span::after{content:"\2605";color:rgba(255,255,255,.6);font-size:9px;margin:0 18px}
 @media(prefers-reduced-motion:reduce){.shipbar .shiptrack{animation:none;justify-content:center}}
 
 /* Marquee */
