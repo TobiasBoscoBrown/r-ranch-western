@@ -39,7 +39,7 @@ const I = {
 const ic = (k,cls)=> `<svg class="icon ${cls||''}" viewBox="0 0 24 24" aria-hidden="true">${I[k]||''}</svg>`;
 
 const DEPTS = [
-  {slug:"saddles", t:"Saddles, New & Used", icon:"saddle", blurb:"New and pre-owned saddles for every discipline, with honest fitting advice and our same-day try-out so you know it fits before you commit."},
+  {slug:"saddles", t:"Saddles, New & Used", icon:"saddle", blurb:"New and pre-owned saddles for every discipline, with honest fitting advice and our in-store same-day try-out so you know it fits before you commit."},
   {slug:"tack", t:"Tack & Riding Gear", icon:"rope", blurb:"Bridles, bits, reins, halters, lead ropes, cinches, pads and grooming. Quality gear at fair prices, new and gently used."},
   {slug:"jewelry", t:"Western Jewelry", icon:"gem", blurb:"Turquoise, earrings and cowgirl pieces that customers drive across the valley for. The kind of detail that finishes the look."},
   {slug:"hats", t:"Hats & Caps", icon:"hat", blurb:"Felt and straw cowboy hats plus a wall of caps, ready for the arena, the ranch, or a Saturday in town."},
@@ -89,7 +89,7 @@ function header(active){
   return `
   <div class="topbar"><div class="wrap">
     <span class="tb-item">${ic('pin')} ${BIZ.addr}, ${BIZ.city}, ${BIZ.state}</span>
-    <span class="tb-item"><span class="dot"></span> ${st.txt} · Tue to Sat</span>
+    <span class="tb-item"><span class="dot"></span> ${st.txt} · Mon to Sat</span>
     <a class="tb-item" href="tel:${BIZ.tel}">${ic('phone')} ${BIZ.phone}</a>
   </div></div>
   <header class="site">

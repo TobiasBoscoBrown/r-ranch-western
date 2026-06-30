@@ -1,7 +1,9 @@
 /* R Ranch Enterprises — live Shopify shop.
-   Catalog + inventory load live from the Shopify store on every page load (no hardcoded products).
-   Checkout hands the cart to Shopify's real, secure checkout via a cart permalink.
-   No API token in the client; uses the store's public JSON + cart permalink. */
+   - Catalog + inventory load live from the Shopify store (no hardcoded products).
+   - Fast first paint: products render the moment they arrive; categories enrich a beat later.
+   - Repeat visits are instant via a short-lived session cache, then refresh in the background.
+   - Collections are deep-linkable (shop.html#earrings) so they're navigable and shareable.
+   - Checkout hands the cart to Shopify's real, secure checkout via a cart permalink. No token in the client. */
 (function(){
 'use strict';
 
@@ -9,14 +11,15 @@ var SHOP = "rranchidaho.shop";                 // Shopify store + checkout domai
 var CAT_ORDER = ["Earrings","Necklaces","Hats","Jeans","Our Favs"]; // preferred chip order
 var PLACEHOLDER = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20400%20300'%3E%3Crect%20width='400'%20height='300'%20fill='%23efe6d4'/%3E%3Ctext%20x='200'%20y='162'%20font-family='Georgia'%20font-size='34'%20fill='%235a3719'%20text-anchor='middle'%3ER%20Ranch%3C/text%3E%3C/svg%3E";
 
-var PRODUCTS=[], CATS=["All"], activeCat="All", draft=null, loadError=false;
+var PRODUCTS=[], CATS=["All"], activeCat="All", draft=null, loadError=false, rawProducts=null;
 var cart={};
 
 var $=function(s){return document.querySelector(s);};
 function money(n){return "$"+Number(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
-function img(src,w){ if(!src) return PLACEHOLDER; return src+(src.indexOf("?")>-1?"&":"?")+"width="+(w||800); }
+function img(src,w){ if(!src) return PLACEHOLDER; return src+(src.indexOf("?")>-1?"&":"?")+"width="+(w||600); }
 function stripHtml(h){ var d=document.createElement("div"); d.innerHTML=h||""; return (d.textContent||"").replace(/\s+/g," ").trim(); }
+function slug(s){ return String(s).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,""); }
 
 /* ---------- cart persistence ---------- */
 function save(){ try{ localStorage.setItem("rr_shop_cart", JSON.stringify(cart)); }catch(e){} }
@@ -25,51 +28,78 @@ function items(){ return Object.keys(cart).map(function(k){return cart[k];}); }
 function count(){ return items().reduce(function(a,b){return a+b.qty;},0); }
 function subtotal(){ return items().reduce(function(a,b){return a+b.price*b.qty;},0); }
 
+/* ---------- session cache (instant repeat loads, still live) ---------- */
+function cacheGet(){ try{ return JSON.parse(sessionStorage.getItem("rr_catalog")||"null"); }catch(e){ return null; } }
+function cacheSet(){ try{ sessionStorage.setItem("rr_catalog", JSON.stringify({P:PRODUCTS,C:CATS})); }catch(e){} }
+
+/* ---------- deep-linkable categories ---------- */
+function catFromHash(){
+  var h=(location.hash||"").replace(/^#/,"");
+  if(!h) return "All";
+  for(var i=0;i<CATS.length;i++){ if(slug(CATS[i])===h) return CATS[i]; }
+  return "All";
+}
+function setHash(cat){
+  if(cat==="All"){ if(location.hash) history.replaceState(null,"",location.pathname+location.search); }
+  else { history.replaceState(null,"","#"+slug(cat)); }
+}
+
 /* ---------- data load ---------- */
 function getJSON(u){ return fetch(u,{headers:{Accept:"application/json"}}).then(function(r){ if(!r.ok) throw new Error(u+" "+r.status); return r.json(); }); }
 
+function build(pj, membership){
+  var list=[];
+  (pj.products||[]).forEach(function(p){
+    var variants=(p.variants||[]).map(function(v){ return { id:v.id, price:parseFloat(v.price)||0, available:!!v.available, opt:v.option1 }; });
+    var prices=variants.map(function(v){return v.price;}).filter(function(n){return n>0;});
+    var minP=prices.length?Math.min.apply(null,prices):0;
+    if(minP<=0) return; // skip unpriced / unfinished drafts
+    var realOpts=(p.options||[]).filter(function(o){ return !(o.values.length===1 && o.values[0]==="Default Title"); });
+    var cats=(membership[p.id]||[]).slice();
+    if(p.product_type && cats.indexOf(p.product_type)<0) cats.push(p.product_type);
+    list.push({
+      id:p.id, handle:p.handle, name:p.title, desc:stripHtml(p.body_html),
+      price:minP, img:(p.images&&p.images[0]&&p.images[0].src)||"",
+      variants:variants, options:realOpts, cats:cats,
+      available: variants.some(function(v){return v.available;})
+    });
+  });
+  PRODUCTS=list;
+  var present={}; PRODUCTS.forEach(function(p){ p.cats.forEach(function(c){present[c]=1;}); });
+  var ordered=CAT_ORDER.filter(function(c){return present[c];});
+  Object.keys(present).sort().forEach(function(c){ if(ordered.indexOf(c)<0) ordered.push(c); });
+  CATS=["All"].concat(ordered);
+}
+
 function loadCatalog(){
-  var membership={}; // productId -> [categoryTitle]
-  return getJSON("https://"+SHOP+"/collections.json?limit=250").then(function(cj){
+  // fire products and collections in parallel; paint products as soon as they land
+  var pProducts=getJSON("https://"+SHOP+"/products.json?limit=250").then(function(pj){
+    rawProducts=pj; build(pj,{});        // first paint: real products, categories from product type only
+    if(activeCat!=="All" && CATS.indexOf(activeCat)<0) activeCat="All";
+    renderFilter(); renderGrid();
+  });
+  var pMembers=getJSON("https://"+SHOP+"/collections.json?limit=250").then(function(cj){
     var cols=(cj.collections||[]).filter(function(c){return c.products_count>0 && c.handle!=="frontpage";});
-    // fetch each collection's products to know which products belong to it
+    var membership={};
     return Promise.all(cols.map(function(c){
       return getJSON("https://"+SHOP+"/collections/"+c.handle+"/products.json?limit=250")
         .then(function(pj){ (pj.products||[]).forEach(function(p){ (membership[p.id]=membership[p.id]||[]).push(c.title); }); })
         .catch(function(){});
-    }));
-  }).catch(function(){/* categories optional */}).then(function(){
-    return getJSON("https://"+SHOP+"/products.json?limit=250");
-  }).then(function(pj){
-    var list=[];
-    (pj.products||[]).forEach(function(p){
-      var variants=(p.variants||[]).map(function(v){ return { id:v.id, title:v.title, price:parseFloat(v.price)||0, available:!!v.available, opt:v.option1 }; });
-      var prices=variants.map(function(v){return v.price;}).filter(function(n){return n>0;});
-      var minP=prices.length?Math.min.apply(null,prices):0;
-      if(minP<=0) return; // skip unpriced / unfinished drafts
-      var realOpts=(p.options||[]).filter(function(o){ return !(o.values.length===1 && o.values[0]==="Default Title"); });
-      var cats=(membership[p.id]||[]).slice();
-      if(p.product_type && cats.indexOf(p.product_type)<0) cats.push(p.product_type);
-      list.push({
-        id:p.id, handle:p.handle, name:p.title, desc:stripHtml(p.body_html),
-        price:minP, img:(p.images&&p.images[0]&&p.images[0].src)||"",
-        variants:variants, options:realOpts, cats:cats,
-        available: variants.some(function(v){return v.available;})
-      });
-    });
-    PRODUCTS=list;
-    var present={}; PRODUCTS.forEach(function(p){ p.cats.forEach(function(c){present[c]=1;}); });
-    var ordered=CAT_ORDER.filter(function(c){return present[c];});
-    Object.keys(present).sort().forEach(function(c){ if(ordered.indexOf(c)<0) ordered.push(c); });
-    CATS=["All"].concat(ordered);
+    })).then(function(){ return membership; });
+  }).catch(function(){ return {}; });
+
+  return Promise.all([pProducts,pMembers]).then(function(res){
+    if(rawProducts){ build(rawProducts, res[1]||{}); }  // enrich with real collections
+    activeCat=catFromHash();
+    cacheSet(); renderFilter(); renderGrid();
   });
 }
 
 /* ---------- filter chips ---------- */
 function renderFilter(){
   var f=$("#dept-filter"); if(!f) return;
-  f.innerHTML=CATS.map(function(c){ return '<button data-cat="'+esc(c)+'" class="chip'+(c===activeCat?' on':'')+'">'+esc(c)+'</button>'; }).join("");
-  Array.prototype.forEach.call(f.querySelectorAll("[data-cat]"),function(b){ b.onclick=function(){ activeCat=b.getAttribute("data-cat"); renderFilter(); renderGrid(); }; });
+  f.innerHTML=CATS.map(function(c){ return '<button data-cat="'+esc(c)+'" class="chip'+(c===activeCat?" on":"")+'">'+esc(c)+'</button>'; }).join("");
+  Array.prototype.forEach.call(f.querySelectorAll("[data-cat]"),function(b){ b.onclick=function(){ activeCat=b.getAttribute("data-cat"); setHash(activeCat); renderFilter(); renderGrid(); }; });
 }
 function visible(){ return PRODUCTS.filter(function(p){ return activeCat==="All"||p.cats.indexOf(activeCat)>-1; }); }
 function prod(id){ for(var i=0;i<PRODUCTS.length;i++){ if(String(PRODUCTS[i].id)===String(id)) return PRODUCTS[i]; } return null; }
@@ -77,20 +107,20 @@ function prod(id){ for(var i=0;i<PRODUCTS.length;i++){ if(String(PRODUCTS[i].id)
 /* ---------- product grid ---------- */
 function renderGrid(){
   var g=$("#product-grid"); if(!g) return;
-  if(loadError){ g.innerHTML='<p class="cempty">We couldn’t load the shop just now. Please refresh, or call (208) 318-8888.</p>'; return; }
+  if(!PRODUCTS.length && loadError){ g.innerHTML='<p class="cempty">We couldn’t load the shop just now. Please refresh, or call (208) 318-8888.</p>'; return; }
   if(!PRODUCTS.length){ g.innerHTML='<p class="cempty">Loading the shop…</p>'; return; }
   var list=visible();
   if(!list.length){ g.innerHTML='<p class="cempty">Nothing in this category yet.</p>'; return; }
   g.innerHTML=list.map(function(p){
     var sold=!p.available;
     var btn=sold?'<button class="btn btn-primary psm" disabled>Sold out</button>'
-                :'<button class="btn btn-primary psm" data-open="'+p.id+'">'+(p.options.length?'Choose':'Add')+'</button>';
+                :'<button class="btn btn-primary psm" data-open="'+p.id+'">'+(p.options.length?"Choose":"Add")+'</button>';
     return '<div class="pcard">'
-      +'<button class="pimg" data-open="'+p.id+'" aria-label="View '+esc(p.name)+'"><img src="'+esc(img(p.img,700))+'" alt="'+esc(p.name)+'" loading="lazy">'+(sold?'<span class="badge">Sold out</span>':'')+'</button>'
+      +'<button class="pimg" data-open="'+p.id+'" aria-label="View '+esc(p.name)+'"><img src="'+esc(img(p.img,500))+'" alt="'+esc(p.name)+'" loading="lazy">'+(sold?'<span class="badge">Sold out</span>':'')+'</button>'
       +'<div class="pbody">'
-      +(p.cats.length?'<div class="pdept">'+esc(p.cats[0])+'</div>':'<div class="pdept">R Ranch</div>')
+      +'<div class="pdept">'+esc(p.cats.length?p.cats[0]:"R Ranch")+'</div>'
       +'<h3 class="pname">'+esc(p.name)+'</h3>'
-      +(p.desc?'<p class="pdesc">'+esc(p.desc.slice(0,120))+(p.desc.length>120?'…':'')+'</p>':'<p class="pdesc"></p>')
+      +(p.desc?'<p class="pdesc">'+esc(p.desc.slice(0,120))+(p.desc.length>120?"…":"")+'</p>':'<p class="pdesc"></p>')
       +'<div class="prow"><span class="pprice">'+money(p.price)+'</span>'+btn+'</div>'
       +'</div></div>';
   }).join("");
@@ -121,8 +151,8 @@ function renderSheet(){
     opts='<div class="og"><div class="oglabel">'+esc(o.name)+' <span class="req">*</span></div><div class="ogchoices">'
       + o.values.map(function(val){
           var ov=null; for(var i=0;i<p.variants.length;i++){ if(p.variants[i].opt===val){ ov=p.variants[i]; break; } }
-          var avail=ov&&ov.available; var on=draft.opt===val?' on':'';
-          return '<button data-v="'+esc(val)+'" class="ochip'+on+'"'+(avail?'':' disabled')+'>'+esc(val)+(avail?'':' · sold out')+'</button>';
+          var avail=ov&&ov.available; var on=draft.opt===val?" on":"";
+          return '<button data-v="'+esc(val)+'" class="ochip'+on+'"'+(avail?"":" disabled")+'>'+esc(val)+(avail?"":" · sold out")+'</button>';
         }).join("")
       +'</div></div>';
   }
@@ -130,7 +160,7 @@ function renderSheet(){
   s.innerHTML='<div class="sheet-back" data-close></div>'
     +'<div class="sheet-scroll">'
     +'<button class="sheet-x" data-close aria-label="Close">&times;</button>'
-    +'<img class="sheet-img" src="'+esc(img(p.img,900))+'" alt="'+esc(p.name)+'">'
+    +'<img class="sheet-img" src="'+esc(img(p.img,800))+'" alt="'+esc(p.name)+'">'
     +(p.cats.length?'<div class="sheet-dept">'+esc(p.cats.join(" · "))+'</div>':'')
     +'<h3 class="sheet-name">'+esc(p.name)+'</h3>'
     +'<div class="sheet-price">'+money(price)+'</div>'
@@ -138,7 +168,7 @@ function renderSheet(){
     +opts
     +'<div class="sheet-add">'
     +'<div class="qty"><button id="qd">&minus;</button><span id="qv">'+draft.qty+'</span><button id="qi">+</button></div>'
-    +'<button id="sadd" class="btn btn-primary grow"'+(ready()?'':' disabled')+'>'+(soldAll?'Sold out':(p.options.length&&!draft.opt?'Select an option':'Add '+draft.qty+' to cart'))+'</button>'
+    +'<button id="sadd" class="btn btn-primary grow"'+(ready()?"":" disabled")+'>'+(soldAll?"Sold out":(p.options.length&&!draft.opt?"Select an option":"Add "+draft.qty+" to cart"))+'</button>'
     +'</div>'
     +'<p class="cnote">Secure checkout by Shopify. Pickup at the Caldwell shop or shipping at checkout.</p>'
     +'</div>';
@@ -196,9 +226,13 @@ function renderFab(){
 
 /* ---------- boot ---------- */
 function boot(){
-  loadCart(); renderFilter(); renderGrid(); renderCart(); renderFab();
-  loadCatalog().then(function(){ loadError=false; renderFilter(); renderGrid(); })
-    .catch(function(e){ loadError=true; renderGrid(); });
+  loadCart();
+  var cached=cacheGet();
+  if(cached && cached.P && cached.P.length){ PRODUCTS=cached.P; CATS=cached.C||["All"]; }
+  activeCat=catFromHash();
+  renderFilter(); renderGrid(); renderCart(); renderFab();
+  loadCatalog().then(function(){ loadError=false; }).catch(function(){ if(!PRODUCTS.length){ loadError=true; renderGrid(); } });
+  window.addEventListener("hashchange", function(){ activeCat=catFromHash(); renderFilter(); renderGrid(); });
 }
 if(document.readyState!=="loading") boot(); else document.addEventListener("DOMContentLoaded", boot);
 })();
