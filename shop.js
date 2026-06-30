@@ -7,7 +7,8 @@
 (function(){
 'use strict';
 
-var SHOP = "rranchidaho.shop";                 // Shopify store + checkout domain
+var SHOP_DATA = "c3iguu-w6.myshopify.com";        // catalog source (Shopify host with a valid cert, served cross-origin)
+var SHOP_CHECKOUT = "checkout.rranchidaho.shop";    // branded Shopify checkout (cart hand-off)
 var CAT_ORDER = ["Earrings","Necklaces","Hats","Jeans","Our Favs"]; // preferred chip order
 var PLACEHOLDER = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20400%20300'%3E%3Crect%20width='400'%20height='300'%20fill='%23efe6d4'/%3E%3Ctext%20x='200'%20y='162'%20font-family='Georgia'%20font-size='34'%20fill='%235a3719'%20text-anchor='middle'%3ER%20Ranch%3C/text%3E%3C/svg%3E";
 
@@ -73,16 +74,16 @@ function build(pj, membership){
 
 function loadCatalog(){
   // fire products and collections in parallel; paint products as soon as they land
-  var pProducts=getJSON("https://"+SHOP+"/products.json?limit=250").then(function(pj){
+  var pProducts=getJSON("https://"+SHOP_DATA+"/products.json?limit=250").then(function(pj){
     rawProducts=pj; build(pj,{});        // first paint: real products, categories from product type only
     if(activeCat!=="All" && CATS.indexOf(activeCat)<0) activeCat="All";
     renderFilter(); renderGrid();
   });
-  var pMembers=getJSON("https://"+SHOP+"/collections.json?limit=250").then(function(cj){
+  var pMembers=getJSON("https://"+SHOP_DATA+"/collections.json?limit=250").then(function(cj){
     var cols=(cj.collections||[]).filter(function(c){return c.products_count>0 && c.handle!=="frontpage";});
     var membership={};
     return Promise.all(cols.map(function(c){
-      return getJSON("https://"+SHOP+"/collections/"+c.handle+"/products.json?limit=250")
+      return getJSON("https://"+SHOP_DATA+"/collections/"+c.handle+"/products.json?limit=250")
         .then(function(pj){ (pj.products||[]).forEach(function(p){ (membership[p.id]=membership[p.id]||[]).push(c.title); }); })
         .catch(function(){});
     })).then(function(){ return membership; });
@@ -214,7 +215,7 @@ function goCheckout(){
   var parts=items().map(function(i){ return i.variantId+":"+i.qty; });
   if(!parts.length) return;
   var btn=$("#toCheckout"); if(btn){ btn.disabled=true; btn.textContent="Taking you to secure checkout…"; }
-  window.location.href="https://"+SHOP+"/cart/"+parts.join(",");
+  window.location.href="https://"+SHOP_CHECKOUT+"/cart/"+parts.join(",");
 }
 
 /* ---------- floating cart button ---------- */
