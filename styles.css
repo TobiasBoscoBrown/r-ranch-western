@@ -78,14 +78,14 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(247,240,225,.92);ba
 
 /* Shipping banner */
 .shipbar{background:var(--accent);color:#fff;overflow:hidden}
-.shipbar .shiptrack{display:flex;white-space:nowrap;animation:scroll 30s linear infinite;will-change:transform}
+.shipbar .shiptrack{display:flex;white-space:nowrap;animation:scroll 13s linear infinite;will-change:transform}
 .shipbar span{padding:9px 0;font:700 12px/1 Inter;letter-spacing:.14em;text-transform:uppercase;display:inline-flex;align-items:center;gap:30px}
 .shipbar span::after{content:"\2605";color:rgba(255,255,255,.65);font-size:9px}
 @media(prefers-reduced-motion:reduce){.shipbar .shiptrack{animation:none;justify-content:center}}
 
 /* Marquee */
 .marquee{background:var(--leather);color:#f6ead4;overflow:hidden;border-top:1px solid var(--leather-deep);border-bottom:1px solid var(--leather-deep)}
-.marquee .track{display:flex;gap:0;white-space:nowrap;animation:scroll 34s linear infinite;will-change:transform}
+.marquee .track{display:flex;gap:0;white-space:nowrap;animation:scroll 18s linear infinite;will-change:transform}
 .marquee span{padding:13px 26px;font-family:'Fraunces';font-style:italic;font-size:17px;display:inline-flex;align-items:center;gap:26px}
 .marquee span::after{content:"✦";color:var(--gold);font-style:normal;font-size:12px}
 @keyframes scroll{to{transform:translateX(-50%)}}
