@@ -77,7 +77,10 @@ function build(pj, membership){
       available: variants.some(function(v){return v.available;}) });
   });
   PRODUCTS=list;
-  var present={}; PRODUCTS.forEach(function(p){ p.cats.forEach(function(c){present[c]=1;}); });
+  computeCats();
+}
+function computeCats(){
+  var present={}; PRODUCTS.forEach(function(p){ if(!p.available) return; p.cats.forEach(function(c){present[c]=1;}); });
   var ordered=CAT_ORDER.filter(function(c){return present[c];});
   Object.keys(present).sort().forEach(function(c){ if(ordered.indexOf(c)<0) ordered.push(c); });
   CATS=["All"].concat(ordered);
@@ -110,7 +113,9 @@ function loadCatalog(){
   return Promise.all([pProducts,pMembers,pQty]).then(function(res){
     if(rawProducts){ build(rawProducts, res[1]||{}); }
     applyQuantities(res[2]||{});
+    computeCats();
     activeCat=catFromHash();
+    if(CATS.indexOf(activeCat)<0) activeCat="All";
     cacheSet(); renderFilter(); renderGrid();
   });
 }
@@ -137,8 +142,8 @@ function renderGrid(){
   var g=$("#product-grid"); if(!g) return;
   if(!PRODUCTS.length && loadError){ g.innerHTML='<p class="cempty">We couldn’t load the shop just now. Please refresh, or call (208) 318-8888.</p>'; return; }
   if(!PRODUCTS.length){ g.innerHTML='<p class="cempty">Loading the shop…</p>'; return; }
-  var list=visible();
-  if(!list.length){ g.innerHTML='<p class="cempty">Nothing in this category yet.</p>'; return; }
+  var list=visible().filter(function(p){ return p.available; });
+  if(!list.length){ g.innerHTML='<p class="cempty">Nothing in this category right now. Check back soon.</p>'; return; }
   g.innerHTML=list.map(function(p){
     var sold=!p.available;
     var btn=sold?'<button class="btn btn-primary psm" disabled>Sold out</button>'
