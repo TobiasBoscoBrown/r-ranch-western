@@ -201,7 +201,7 @@ function renderCart(){
         +'<div class="cp">'+money(i.price*i.qty)+'</div></div>';
     }).join("") : '<p class="cempty">Your cart is empty. Add some western finds.</p>';
   var totals=its.length? '<div class="ctot"><span>Subtotal</span><span>'+money(subtotal())+'</span></div><p class="cnote">Shipping &amp; tax calculated at secure checkout.</p>' : "";
-  var foot=its.length? '<button id="toCheckout" class="btn btn-primary grow">Checkout</button>' : "";
+  var foot=its.length? '<button id="toCheckout" class="btn btn-primary" style="width:100%;justify-content:center;flex:0 0 auto">Checkout</button>' : "";
   d.innerHTML='<div class="drawer-back" data-cclose></div>'
     +'<div class="drawer"><div class="dhead"><h3>Your cart</h3><button data-cclose class="sheet-x" aria-label="Close">&times;</button></div>'
     +'<div class="ditems">'+rows+'</div>'+totals+foot+'</div>';
