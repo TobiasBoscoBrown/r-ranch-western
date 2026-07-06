@@ -86,9 +86,9 @@ function header(active){
   const links=[["index.html","Home"],["services.html","Departments"],["shop.html","Shop"],["blog.html","Saddle Up Journal"],["about.html","About"],["index.html#visit","Visit"]];
   const nav = links.map(l=>`<a href="${l[0]}"${active===l[0]?' aria-current="page"':''}>${l[1]}</a>`).join('');
   const st=openStatus();
-  const ship='<span>Free Shipping on Orders Over $20</span>';
+  const ship='<span>Free Shipping on Orders Over $50</span>';
   return `
-  <div class="shipbar" aria-label="Free shipping over twenty dollars"><div class="shiptrack">${ship.repeat(8)}${ship.repeat(8)}</div></div>
+  <div class="shipbar" aria-label="Free shipping over fifty dollars"><div class="shiptrack">${ship.repeat(8)}${ship.repeat(8)}</div></div>
   <div class="topbar"><div class="wrap">
     <span class="tb-item">${ic('pin')} ${BIZ.addr}, ${BIZ.city}, ${BIZ.state}</span>
     <span class="tb-item"><span class="dot"></span> ${st.txt} · Mon to Sat</span>
