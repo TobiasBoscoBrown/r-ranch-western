@@ -83,7 +83,7 @@ function openStatus(){
 }
 
 function header(active){
-  const links=[["index.html","Home"],["services.html","Departments"],["shop.html","Shop"],["blog.html","Saddle Up Journal"],["index.html#visit","Visit"]];
+  const links=[["index.html","Home"],["services.html","Departments"],["shop.html","Shop"],["blog.html","Saddle Up Journal"],["about.html","About"],["index.html#visit","Visit"]];
   const nav = links.map(l=>`<a href="${l[0]}"${active===l[0]?' aria-current="page"':''}>${l[1]}</a>`).join('');
   const st=openStatus();
   const ship='<span>Free Shipping on Orders Over $20</span>';
