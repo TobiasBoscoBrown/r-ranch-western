@@ -199,7 +199,7 @@ section{padding:70px 0}
 
 /* footer */
 footer.site{background:var(--ink);color:#d9ccb8;padding:56px 0 26px;font-size:15px}
-footer.site .cols{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:34px}
+footer.site .cols{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px}
 @media(max-width:860px){footer.site .cols{grid-template-columns:1fr;gap:24px}}
 footer.site h4{font-family:'Fraunces';color:#fff;font-size:18px;margin:0 0 14px}
 footer.site a{color:#d9ccb8}

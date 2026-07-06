@@ -139,6 +139,15 @@ function footer(){
         <h4 style="margin-top:20px">Hours</h4>
         <div class="hours">${hrs}</div>
       </div>
+      <div>
+        <h4>Policies</h4>
+        <ul>
+          <li><a href="shipping-policy.html">Shipping Policy</a></li>
+          <li><a href="refund-policy.html">Returns &amp; Refunds</a></li>
+          <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          <li><a href="terms-of-service.html">Terms of Service</a></li>
+        </ul>
+      </div>
     </div>
     <div class="legal">
       <span>© <span id="yr"></span> R Ranch Enterprises. All rights reserved.</span>
