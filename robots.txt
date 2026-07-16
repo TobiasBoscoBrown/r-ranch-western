@@ -1,3 +1,14 @@
+# This deployment is intentionally de-indexed.
+# The live store is https://rranchidaho.com (Shopify).
+#
+# NOTE: crawling is deliberately left ALLOWED. Googlebot must be able to
+# fetch these pages to see the "noindex" meta tag and drop them from the
+# index. Adding "Disallow: /" here would block the crawl, Google would
+# never see the noindex, and already-indexed pages would be frozen in the
+# results instead of removed. Once these URLs are gone from the index,
+# this file can be switched to Disallow.
+
 User-agent: *
 Allow: /
+
 Sitemap: https://r-ranch-western.vercel.app/sitemap.xml
