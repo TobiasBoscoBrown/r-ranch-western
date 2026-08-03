@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>https://rranchidaho.shop/</loc><priority>1.0</priority></url>
-<url><loc>https://rranchidaho.shop/services.html</loc><priority>0.8</priority></url>
-<url><loc>https://rranchidaho.shop/saddles.html</loc><priority>0.8</priority></url>
-<url><loc>https://rranchidaho.shop/tack.html</loc><priority>0.8</priority></url>
-<url><loc>https://rranchidaho.shop/jewelry.html</loc><priority>0.8</priority></url>
-<url><loc>https://rranchidaho.shop/hats.html</loc><priority>0.8</priority></url>
-<url><loc>https://rranchidaho.shop/apparel.html</loc><priority>0.8</priority></url>
-<url><loc>https://rranchidaho.shop/used-gear.html</loc><priority>0.8</priority></url>
-<url><loc>https://rranchidaho.shop/blog.html</loc><priority>0.7</priority></url>
-<url><loc>https://rranchidaho.shop/shipping-policy.html</loc><priority>0.4</priority></url>
-<url><loc>https://rranchidaho.shop/refund-policy.html</loc><priority>0.4</priority></url>
-<url><loc>https://rranchidaho.shop/privacy-policy.html</loc><priority>0.4</priority></url>
-<url><loc>https://rranchidaho.shop/terms-of-service.html</loc><priority>0.4</priority></url>
-<url><loc>https://rranchidaho.shop/about.html</loc><priority>0.6</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/</loc><priority>1.0</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/shop.html</loc><priority>0.9</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/services.html</loc><priority>0.8</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/saddles.html</loc><priority>0.8</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/tack.html</loc><priority>0.8</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/jewelry.html</loc><priority>0.8</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/hats.html</loc><priority>0.8</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/apparel.html</loc><priority>0.8</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/used-gear.html</loc><priority>0.8</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/blog.html</loc><priority>0.7</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/blog-cowboy-hats.html</loc><priority>0.7</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/about.html</loc><priority>0.6</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/shipping-policy.html</loc><priority>0.4</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/refund-policy.html</loc><priority>0.4</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/privacy-policy.html</loc><priority>0.4</priority></url>
+<url><loc>https://r-ranch-western.vercel.app/terms-of-service.html</loc><priority>0.4</priority></url>
 </urlset>

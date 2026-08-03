@@ -2,7 +2,7 @@
 
 <html lang="en">
 <head>
-<meta name="robots" content="noindex,nofollow"/>
+<meta name="robots" content="index,follow"/>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Shop | R Ranch Enterprises — Saddles, Tack, Hats &amp; Western Goods, Caldwell ID</title>
@@ -33,8 +33,8 @@
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px;padding:14px 0 60px}
 .pcard{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .15s}
 .pcard:hover{transform:translateY(-3px)}
-.pimg{border:0;padding:0;cursor:pointer;position:relative;background:var(--sand);aspect-ratio:4/3;overflow:hidden;display:block}
-.pimg img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.pimg{border:0;padding:10px;cursor:pointer;position:relative;background:var(--sand);aspect-ratio:1/1;overflow:hidden;display:block}
+.pimg img{width:100%;height:100%;object-fit:contain;transition:transform .4s}
 .pcard:hover .pimg img{transform:scale(1.05)}
 .pimg .badge{position:absolute;top:10px;left:10px;background:var(--leather);color:#fff;font:700 11px Inter;letter-spacing:.04em;text-transform:uppercase;padding:4px 9px;border-radius:999px}
 .pbody{padding:14px 14px 15px;display:flex;flex-direction:column;flex:1}
@@ -63,7 +63,12 @@
 .sheet-scroll{position:relative;background:var(--cream);width:100%;max-width:440px;max-height:92vh;overflow-y:auto;border-radius:20px 20px 0 0;padding:18px;box-shadow:0 -10px 40px rgba(0,0,0,.25)}
 @media(min-width:640px){.sheet-scroll{border-radius:18px}}
 .sheet-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:20px;line-height:1;color:var(--muted);cursor:pointer;z-index:2}
-.sheet-img{width:100%;height:200px;object-fit:cover;border-radius:12px}
+.sheet-img{width:100%;height:auto;max-height:56vh;object-fit:contain;background:var(--sand);border-radius:12px;display:block}
+.sheet-gallery{display:flex;flex-direction:column;gap:9px}
+.sheet-thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.sheet-thumb{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--sand);width:58px;height:58px;padding:0;cursor:pointer;flex:0 0 auto}
+.sheet-thumb.on{border-color:var(--accent);box-shadow:0 0 0 2px rgba(14,138,127,.3)}
+.sheet-thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .sheet-dept{font:700 10.5px Inter;text-transform:uppercase;letter-spacing:.14em;color:var(--accent-deep);margin-top:12px}
 .sheet-name{font-family:'Fraunces';font-weight:600;font-size:23px;color:var(--ink);margin:3px 0}
 .sheet-price{font-family:'Fraunces';font-weight:600;font-size:20px;color:var(--accent-deep)}
@@ -127,7 +132,7 @@
 .grid2 .sinput{min-width:0;width:100%}
 .fopt{min-width:0}
 </style>
-<meta content="R Ranch Enterprises" property="og:site_name"/><meta content="https://rranchidaho.shop/shop.html" property="og:url"/><meta content="https://rranchidaho.shop/images/og-image.jpg" property="og:image"/><meta content="https://rranchidaho.shop/images/og-image.jpg" property="og:image:secure_url"/><meta content="1200" property="og:image:width"/><meta content="630" property="og:image:height"/><meta content="R Ranch Enterprises storefront in Caldwell, Idaho" property="og:image:alt"/><meta content="summary_large_image" name="twitter:card"/><meta content="Shop | R Ranch Enterprises — Saddles, Tack, Hats &amp; Western Goods, Caldwell ID" name="twitter:title"/><meta content="Shop R Ranch Enterprises online: new and used saddles, tack, cowboy hats, turquoise jewelry, purses and gifts. Buy online for shipping or in-store pickup from Caldwell, Idaho." name="twitter:description"/><meta content="https://rranchidaho.shop/images/og-image.jpg" name="twitter:image"/></head>
+<meta content="R Ranch Enterprises" property="og:site_name"/><meta content="https://r-ranch-western.vercel.app/shop.html" property="og:url"/><meta content="https://r-ranch-western.vercel.app/images/og-image.jpg" property="og:image"/><meta content="https://r-ranch-western.vercel.app/images/og-image.jpg" property="og:image:secure_url"/><meta content="1200" property="og:image:width"/><meta content="630" property="og:image:height"/><meta content="R Ranch Enterprises storefront in Caldwell, Idaho" property="og:image:alt"/><meta content="summary_large_image" name="twitter:card"/><meta content="Shop | R Ranch Enterprises — Saddles, Tack, Hats &amp; Western Goods, Caldwell ID" name="twitter:title"/><meta content="Shop R Ranch Enterprises online: new and used saddles, tack, cowboy hats, turquoise jewelry, purses and gifts. Buy online for shipping or in-store pickup from Caldwell, Idaho." name="twitter:description"/><meta content="https://r-ranch-western.vercel.app/images/og-image.jpg" name="twitter:image"/></head>
 <body>
 <div id="site-header"></div>
 <main>

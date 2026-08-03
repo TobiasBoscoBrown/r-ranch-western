@@ -73,7 +73,9 @@ function build(pj, membership){
     var realOpts=(p.options||[]).filter(function(o){ return !(o.values.length===1 && o.values[0]==="Default Title"); });
     var cats=(membership[p.id]||[]).slice(); if(p.product_type && cats.indexOf(p.product_type)<0) cats.push(p.product_type);
     list.push({ id:p.id, handle:p.handle, name:p.title, desc:stripHtml(p.body_html), price:minP,
-      img:(p.images&&p.images[0]&&p.images[0].src)||"", variants:variants, options:realOpts, cats:cats,
+      img:(p.images&&p.images[0]&&p.images[0].src)||"",
+      imgs:(p.images||[]).map(function(im){return im.src;}).filter(Boolean),
+      variants:variants, options:realOpts, cats:cats,
       available: variants.some(function(v){return v.available;}) });
   });
   PRODUCTS=list;
@@ -200,10 +202,14 @@ function renderSheet(){
   var stockNote="";
   if(v && v.available && v.qty!=null && v.qty>0 && v.qty<=LOW_STOCK) stockNote='<div class="sstock">Only '+v.qty+' left</div>';
   var atCap = v && rem>0 && draft.qty>=rem;
+  var gimgs = (p.imgs && p.imgs.length ? p.imgs : (p.img ? [p.img] : []));
+  var galleryHtml = '<div class="sheet-gallery"><img class="sheet-img" id="sheetMain" src="'+esc(img(gimgs[0]||"",900))+'" alt="'+esc(p.name)+'">'
+    +(gimgs.length>1 ? '<div class="sheet-thumbs">'+gimgs.map(function(src,ix){ return '<button type="button" class="sheet-thumb'+(ix===0?" on":"")+'" data-thumb="'+esc(img(src,900))+'" aria-label="View photo '+(ix+1)+'"><img src="'+esc(img(src,160))+'" alt="'+esc(p.name)+' photo '+(ix+1)+'" loading="lazy"></button>'; }).join("")+'</div>' : '')
+    +'</div>';
   s.innerHTML='<div class="sheet-back" data-close></div>'
     +'<div class="sheet-scroll">'
     +'<button class="sheet-x" data-close aria-label="Close">&times;</button>'
-    +'<img class="sheet-img" src="'+esc(img(p.img,800))+'" alt="'+esc(p.name)+'">'
+    +galleryHtml
     +(p.cats.length?'<div class="sheet-dept">'+esc(p.cats.join(" · "))+'</div>':'')
     +'<h3 class="sheet-name">'+esc(p.name)+'</h3>'
     +'<div class="sheet-price">'+money(price)+'</div>'
@@ -217,6 +223,7 @@ function renderSheet(){
     +'<p class="cnote">Secure checkout by Shopify. Pickup at the Caldwell shop or shipping at checkout.</p>'
     +'</div>';
   Array.prototype.forEach.call(s.querySelectorAll("[data-close]"),function(b){ b.onclick=closeSheet; });
+  Array.prototype.forEach.call(s.querySelectorAll("[data-thumb]"),function(b){ b.onclick=function(){ var m=document.getElementById("sheetMain"); if(m) m.src=b.getAttribute("data-thumb"); Array.prototype.forEach.call(s.querySelectorAll(".sheet-thumb.on"),function(e){e.classList.remove("on");}); b.classList.add("on"); }; });
   Array.prototype.forEach.call(s.querySelectorAll("[data-v]"),function(b){ if(b.disabled) return; b.onclick=function(){ var val=b.getAttribute("data-v"); draft.opt=(draft.opt===val?"":val); draft.qty=1; renderSheet(); }; });
   $("#qd").onclick=function(){ draft.qty=Math.max(1,draft.qty-1); renderSheet(); };
   var qi=$("#qi"); if(qi&&!qi.disabled) qi.onclick=function(){ var vv=chosenVariant(); if(vv && draft.qty<remaining(vv)) draft.qty++; renderSheet(); };
