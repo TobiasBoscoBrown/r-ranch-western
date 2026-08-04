@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://r-ranch-western.vercel.app/sitemap.xml
+Sitemap: https://rranchidaho.com/sitemap.xml
