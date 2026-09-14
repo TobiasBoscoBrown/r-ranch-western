@@ -83,7 +83,7 @@ function openStatus(){
 }
 
 function header(active){
-  const links=[["index.html","Home"],["services.html","Departments"],["shop.html","Shop"],["blog.html","Saddle Up Journal"],["about.html","About"],["index.html#visit","Visit"]];
+  const links=[["/","Home"],["/services","Departments"],["/shop","Shop"],["/blog","Saddle Up Journal"],["/about","About"],["/#visit","Visit"]];
   const nav = links.map(l=>`<a href="${l[0]}"${active===l[0]?' aria-current="page"':''}>${l[1]}</a>`).join('');
   const st=openStatus();
   const ship='<span>Free Shipping on Orders Over $50</span>';
@@ -96,7 +96,7 @@ function header(active){
   </div></div>
   <header class="site">
     <div class="nav">
-      <a class="brand" href="index.html" aria-label="${BIZ.name} home">
+      <a class="brand" href="/" aria-label="${BIZ.name} home">
         ${brandmark()}
         <span><span class="bn">R Ranch</span><br><span class="bs">Tack &amp; Western · Caldwell</span></span>
       </a>
@@ -121,7 +121,7 @@ function brandmark(){
 
 function footer(){
   const hrs=BIZ.hours.map(h=>`<span class="d">${h[0]}</span><span>${h[1]}</span>`).join('');
-  const depts=DEPTS.map(d=>`<li><a href="${d.slug}.html">${d.t}</a></li>`).join('');
+  const depts=DEPTS.map(d=>`<li><a href="/${d.slug}">${d.t}</a></li>`).join('');
   return `<div class="wrap">
     <div class="cols">
       <div>
@@ -142,10 +142,10 @@ function footer(){
       <div>
         <h4>Policies</h4>
         <ul>
-          <li><a href="shipping-policy.html">Shipping Policy</a></li>
-          <li><a href="refund-policy.html">Returns &amp; Refunds</a></li>
-          <li><a href="privacy-policy.html">Privacy Policy</a></li>
-          <li><a href="terms-of-service.html">Terms of Service</a></li>
+          <li><a href="/shipping-policy">Shipping Policy</a></li>
+          <li><a href="/refund-policy">Returns &amp; Refunds</a></li>
+          <li><a href="/privacy-policy">Privacy Policy</a></li>
+          <li><a href="/terms-of-service">Terms of Service</a></li>
         </ul>
       </div>
     </div>
@@ -163,7 +163,7 @@ function revCard(r){
 }
 
 function deptCard(d){
-  return `<a class="tilt-card magnetic-soft" href="${d.slug}.html" aria-label="${d.t}">
+  return `<a class="tilt-card magnetic-soft" href="/${d.slug}" aria-label="${d.t}">
     <div class="glare"></div>
     <div class="body">
       <div class="ic">${ic(d.icon)}</div>
@@ -213,7 +213,13 @@ function burger(){
 }
 
 function build(){
-  const active=(location.pathname.split('/').pop()||'index.html');
+  // Clean URLs: /shop, /about, / — and /products/<handle> highlights Shop.
+  const active=(()=>{
+    let p=(location.pathname||'/').replace(/\.html$/,'').replace(/\/+$/,'');
+    if(p==='/index'||p==='') p='/';
+    if(p.indexOf('/products/')===0) p='/shop';
+    return p;
+  })();
   const h=document.getElementById('site-header'); if(h) h.innerHTML=header(active);
   const f=document.getElementById('site-footer'); if(f) f.innerHTML=footer();
   const yr=document.getElementById('yr'); if(yr) yr.textContent=new Date().getFullYear();

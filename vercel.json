@@ -1,1 +1,11 @@
-{}
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/products/:handle", "destination": "/api/product?handle=:handle" },
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" }
+  ],
+  "redirects": [
+    { "source": "/product/:handle", "destination": "/products/:handle", "permanent": true }
+  ]
+}

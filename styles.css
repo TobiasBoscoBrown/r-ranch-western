@@ -279,3 +279,24 @@ footer.site .legal{border-top:1px solid #3a2f22;margin-top:34px;padding-top:18px
 .cart-fab svg{width:20px;height:20px}
 .cart-fab b{background:#fff;color:var(--accent-deep);border-radius:999px;min-width:20px;height:20px;display:grid;place-items:center;font-size:12px;padding:0 5px}
 #cart-drawer *{box-sizing:border-box}
+
+/* product cards link to /products/<handle>; keep the card typography unchanged */
+.pname a{color:inherit;text-decoration:none}
+.pname a:hover{text-decoration:underline}
+.pimg{text-decoration:none}
+.sheet-perma{display:block;margin-top:14px;font:600 13.5px Inter;color:var(--accent-deep);text-decoration:none}
+.sheet-perma:hover{text-decoration:underline}
+
+/* variant picker + quantity stepper - shared by the shop quick-view sheet
+   and the server-rendered product page at /products/<handle> */
+.og{margin-top:14px}
+.oglabel{font:600 14px Inter;color:var(--ink);margin-bottom:7px}
+.req{color:#b4452e}
+.ogchoices{display:flex;flex-wrap:wrap;gap:7px}
+.ochip{font:600 13px Inter;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.ochip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.qty{display:flex;align-items:center;gap:6px}
+.qty button{width:36px;height:36px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:18px;cursor:pointer;color:var(--ink)}
+.qty span{width:30px;text-align:center;font-weight:700}
+.qty button:disabled{opacity:.4;cursor:default}
+.ochip:disabled{opacity:.45;cursor:default;text-decoration:line-through}
