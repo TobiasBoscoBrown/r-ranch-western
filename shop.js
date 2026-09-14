@@ -154,17 +154,27 @@ function renderGrid(){
     var sold=!p.available;
     var btn=sold?'<button class="btn btn-primary psm" disabled>Sold out</button>'
                 :'<button class="btn btn-primary psm" data-open="'+p.id+'">'+(p.options.length?"Choose":"Add")+'</button>';
+    var href='/products/'+encodeURIComponent(p.handle||"");
     return '<div class="pcard">'
-      +'<button class="pimg" data-open="'+p.id+'" aria-label="View '+esc(p.name)+'"><img src="'+esc(img(p.img,500))+'" alt="'+esc(p.name)+'" loading="lazy">'+(sold?'<span class="badge">Sold out</span>':'')+'</button>'
+      +'<a class="pimg" href="'+esc(href)+'" data-open="'+p.id+'" aria-label="View '+esc(p.name)+'"><img src="'+esc(img(p.img,500))+'" alt="'+esc(p.name)+'" loading="lazy">'+(sold?'<span class="badge">Sold out</span>':'')+'</a>'
       +'<div class="pbody">'
       +'<div class="pdept">'+esc(p.cats.length?p.cats[0]:"R Ranch")+'</div>'
-      +'<h3 class="pname">'+esc(p.name)+'</h3>'
+      +'<h3 class="pname"><a href="'+esc(href)+'" data-open="'+p.id+'">'+esc(p.name)+'</a></h3>'
       +(p.desc?'<p class="pdesc">'+esc(p.desc.slice(0,120))+(p.desc.length>120?"…":"")+'</p>':'<p class="pdesc"></p>')
       +cardStock(p)
       +'<div class="prow"><span class="pprice">'+money(p.price)+'</span>'+btn+'</div>'
       +'</div></div>';
   }).join("");
-  Array.prototype.forEach.call(g.querySelectorAll("[data-open]"),function(b){ b.onclick=function(){ openSheet(b.getAttribute("data-open")); }; });
+  /* Cards are real links to /products/<handle> so they can be shared, crawled and
+     opened in a new tab. A plain click still opens the quick-view sheet; modified
+     clicks (new tab, new window) fall through to the browser. */
+  Array.prototype.forEach.call(g.querySelectorAll("[data-open]"),function(b){
+    b.onclick=function(ev){
+      if(ev && (ev.metaKey||ev.ctrlKey||ev.shiftKey||ev.altKey||ev.button===1)) return;
+      if(ev && ev.preventDefault) ev.preventDefault();
+      openSheet(b.getAttribute("data-open"));
+    };
+  });
   renderFab();
 }
 
@@ -220,6 +230,7 @@ function renderSheet(){
     +'<div class="qty"><button id="qd">&minus;</button><span id="qv">'+draft.qty+'</span><button id="qi"'+(atCap||!ready()?" disabled":"")+'>+</button></div>'
     +'<button id="sadd" class="btn btn-primary grow"'+(ready()?"":" disabled")+'>'+(soldAll?"Sold out":(p.options.length&&!draft.opt?"Select an option":(rem<=0?"Max in cart":"Add "+draft.qty+" to cart")))+'</button>'
     +'</div>'
+    +(p.handle?'<a class="sheet-perma" href="/products/'+esc(encodeURIComponent(p.handle))+'">View full details &amp; share this item &rarr;</a>':'')
     +'<p class="cnote">Secure checkout by Shopify. Pickup at the Caldwell shop or shipping at checkout.</p>'
     +'</div>';
   Array.prototype.forEach.call(s.querySelectorAll("[data-close]"),function(b){ b.onclick=closeSheet; });
@@ -278,6 +289,27 @@ function renderFab(){
   fab.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.4 12.2a1.5 1.5 0 0 0 1.5 1.2h8.2a1.5 1.5 0 0 0 1.5-1.2L22 7H6"/></svg><span>Cart</span>'+(c?'<b>'+c+'</b>':'');
   fab.onclick=openDrawer; fab.style.display="inline-flex";
 }
+
+/* ---------- public API ----------
+   The server-rendered product page (/products/<handle>) reuses this cart, drawer
+   and checkout rather than shipping a second copy of them. */
+window.RRShop={
+  add:function(it){
+    if(!it||!it.variantId) return;
+    var key=String(it.variantId);
+    var cur=cart[key]?cart[key].qty:0;
+    var max=(it.max==null?Infinity:it.max);
+    if(!cart[key]) cart[key]={ variantId:it.variantId, productId:it.productId, name:it.name,
+      opt:it.opt||"", price:it.price, img:it.img, qty:0, max:(it.max==null?null:it.max) };
+    cart[key].max=(it.max==null?null:it.max);
+    cart[key].qty=Math.max(1,Math.min(cur+(it.qty||1),max));
+    save(); renderCart(); openDrawer();
+  },
+  inCart:function(vid){ return inCart(vid); },
+  quantities:function(){ return fetchQuantities(); },
+  openDrawer:openDrawer,
+  renderCart:renderCart
+};
 
 /* ---------- boot ---------- */
 function boot(){
