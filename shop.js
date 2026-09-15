@@ -12,7 +12,18 @@ var SHOP_CHECKOUT = "checkout.rranchidaho.shop";   // branded Shopify checkout
 var SF_TOKEN = "e62f42ef4fd19e7c927ba7052a78791e"; // PUBLIC Storefront API token (safe for client)
 var SF_VERSION = "2026-04";
 var LOW_STOCK = 5;                                 // show "Only X left" at or below this
-var CAT_ORDER = ["Earrings","Necklaces","Hats","Jeans","Our Favs"];
+/* Filter chips come from product type, which is the one clean taxonomy in the
+   catalog. Collections are still searchable and still filter, but most of them
+   duplicate a type (Shirts/Tops, Jewelry/Earrings) or cover almost the whole
+   store (Boutique is 69 of 110), so only the curated ones earn a chip. */
+var CAT_ORDER = [
+  "Our Favs!!",
+  "Earrings","Necklaces","Bracelets","Rings","Hair Accessories",
+  "Handbags & Purses","Wallets & Card Holders","Keychains",
+  "Hats","Tops","Sweatshirts & Cardigans","Bottoms","Boots & Shoes",
+  "Horse Tack","Headstalls & Bridles","Bits","Spurs","Fly Masks","Horse Care","Saddles"
+];
+var CURATED_COLLECTIONS = ["Our Favs!!"];
 var PLACEHOLDER = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20400%20300'%3E%3Crect%20width='400'%20height='300'%20fill='%23efe6d4'/%3E%3Ctext%20x='200'%20y='162'%20font-family='Georgia'%20font-size='34'%20fill='%235a3719'%20text-anchor='middle'%3ER%20Ranch%3C/text%3E%3C/svg%3E";
 
 var PRODUCTS=[], CATS=["All"], activeCat="All", draft=null, loadError=false, rawProducts=null, searchTerm="";
@@ -71,19 +82,26 @@ function build(pj, membership){
     var minP=prices.length?Math.min.apply(null,prices):0;
     if(minP<=0) return;
     var realOpts=(p.options||[]).filter(function(o){ return !(o.values.length===1 && o.values[0]==="Default Title"); });
-    var cats=(membership[p.id]||[]).slice(); if(p.product_type && cats.indexOf(p.product_type)<0) cats.push(p.product_type);
+    var cols=(membership[p.id]||[]).slice();
+    var cats=cols.slice(); if(p.product_type && cats.indexOf(p.product_type)<0) cats.push(p.product_type);
     list.push({ id:p.id, handle:p.handle, name:p.title, desc:stripHtml(p.body_html), price:minP,
       img:(p.images&&p.images[0]&&p.images[0].src)||"",
       imgs:(p.images||[]).map(function(im){return im.src;}).filter(Boolean),
-      variants:variants, options:realOpts, cats:cats,
+      variants:variants, options:realOpts, cats:cats, cols:cols, type:p.product_type||"",
       available: variants.some(function(v){return v.available;}) });
   });
   PRODUCTS=list;
   computeCats();
 }
 function computeCats(){
-  var present={}; PRODUCTS.forEach(function(p){ if(!p.available) return; p.cats.forEach(function(c){present[c]=1;}); });
+  var present={};
+  PRODUCTS.forEach(function(p){
+    if(!p.available) return;
+    if(p.type) present[p.type]=1;
+    p.cols.forEach(function(c){ if(CURATED_COLLECTIONS.indexOf(c)>-1) present[c]=1; });
+  });
   var ordered=CAT_ORDER.filter(function(c){return present[c];});
+  // Anything typed but not yet in CAT_ORDER still gets a chip, alphabetically at the end.
   Object.keys(present).sort().forEach(function(c){ if(ordered.indexOf(c)<0) ordered.push(c); });
   CATS=["All"].concat(ordered);
 }
@@ -158,7 +176,7 @@ function renderGrid(){
     return '<div class="pcard">'
       +'<a class="pimg" href="'+esc(href)+'" data-open="'+p.id+'" aria-label="View '+esc(p.name)+'"><img src="'+esc(img(p.img,500))+'" alt="'+esc(p.name)+'" loading="lazy">'+(sold?'<span class="badge">Sold out</span>':'')+'</a>'
       +'<div class="pbody">'
-      +'<div class="pdept">'+esc(p.cats.length?p.cats[0]:"R Ranch")+'</div>'
+      +'<div class="pdept">'+esc(p.type||(p.cats.length?p.cats[0]:"R Ranch"))+'</div>'
       +'<h3 class="pname"><a href="'+esc(href)+'" data-open="'+p.id+'">'+esc(p.name)+'</a></h3>'
       +(p.desc?'<p class="pdesc">'+esc(p.desc.slice(0,120))+(p.desc.length>120?"…":"")+'</p>':'<p class="pdesc"></p>')
       +cardStock(p)
@@ -220,7 +238,7 @@ function renderSheet(){
     +'<div class="sheet-scroll">'
     +'<button class="sheet-x" data-close aria-label="Close">&times;</button>'
     +galleryHtml
-    +(p.cats.length?'<div class="sheet-dept">'+esc(p.cats.join(" · "))+'</div>':'')
+    +(p.type?'<div class="sheet-dept">'+esc(p.type)+'</div>':'')
     +'<h3 class="sheet-name">'+esc(p.name)+'</h3>'
     +'<div class="sheet-price">'+money(price)+'</div>'
     +(p.desc?'<p class="sheet-desc">'+esc(p.desc)+'</p>':'')
