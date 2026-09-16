@@ -2,10 +2,28 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/products/:handle", "destination": "/api/product?handle=:handle" },
-    { "source": "/sitemap.xml", "destination": "/api/sitemap" }
+    {
+      "source": "/products/:handle",
+      "destination": "/api/product?handle=:handle"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap?kind=index"
+    },
+    {
+      "source": "/sitemap-pages.xml",
+      "destination": "/api/sitemap?kind=pages"
+    },
+    {
+      "source": "/sitemap-products.xml",
+      "destination": "/api/sitemap?kind=products"
+    }
   ],
   "redirects": [
-    { "source": "/product/:handle", "destination": "/products/:handle", "permanent": true }
+    {
+      "source": "/product/:handle",
+      "destination": "/products/:handle",
+      "permanent": true
+    }
   ]
 }
