@@ -26,6 +26,7 @@ const PAGES = [
   ["/apparel", "0.8"],
   ["/used-gear", "0.8"],
   ["/blog", "0.7"],
+  ["/blog-western-bits", "0.7"],
   ["/blog-turquoise-jewelry", "0.7"],
   ["/blog-saddle-fit", "0.7"],
   ["/blog-cowboy-hats", "0.7"],
