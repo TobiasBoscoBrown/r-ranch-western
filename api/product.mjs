@@ -70,7 +70,7 @@ o.head + "\n" +
 ".pdp-meta a{color:var(--accent-deep)}\n" +
 ".pdp-back{display:inline-block;margin-top:26px;font:600 14px Inter;color:var(--accent-deep);text-decoration:none}\n" +
 ".pdp-back:hover{text-decoration:underline}\n" +
-"</style>\n</head>\n<body>\n" +
+"</style>\n<script defer src=\"/_vercel/insights/script.js\"></script>\n</head>\n<body>\n" +
 "<div id=\"site-header\"></div>\n" +
 "<main>" + o.body + "</main>\n" +
 "<footer class=\"site\" id=\"site-footer\"></footer>\n" +
