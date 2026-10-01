@@ -83,12 +83,12 @@ function openStatus(){
 }
 
 function header(active){
-  const links=[["/","Home"],["/services","Departments"],["/shop","Shop"],["/blog","Saddle Up Journal"],["/about","About"],["/#visit","Visit"]];
+  const links=[["/shop#new","New"],["/shop#jewelry","Jewelry"],["/shop#purses","Purses"],["/shop#hats","Hats"],["/shop#apparel","Apparel"],["/shop#tack","Tack"],["/blog","Journal"],["/#visit","Visit"]];
   const nav = links.map(l=>`<a href="${l[0]}"${active===l[0]?' aria-current="page"':''}>${l[1]}</a>`).join('');
   const st=openStatus();
-  const ship='<span>Free Shipping on Orders Over $50</span>';
+  const ship='<span>Complimentary shipping on U.S. orders over $50</span><span>Ships from Caldwell, Idaho in 1 to 3 business days</span><span>30 day returns</span>';
   return `
-  <div class="shipbar" aria-label="Free shipping over fifty dollars"><div class="shiptrack">${ship.repeat(8)}${ship.repeat(8)}</div></div>
+  <div class="shipbar" aria-label="Complimentary shipping on orders over fifty dollars"><div class="shiptrack">${ship.repeat(4)}${ship.repeat(4)}</div></div>
   <div class="topbar"><div class="wrap">
     <span class="tb-item">${ic('pin')} ${BIZ.addr}, ${BIZ.city}, ${BIZ.state}</span>
     <span class="tb-item"><span class="dot"></span> ${st.txt} · Mon to Sat</span>
@@ -101,10 +101,10 @@ function header(active){
         <span><span class="bn">R Ranch</span><br><span class="bs">Tack &amp; Western · Caldwell</span></span>
       </a>
       <nav class="navlinks" aria-label="Primary">${nav}</nav>
-      <a class="btn btn-primary navcta magnetic" href="tel:${BIZ.tel}">${ic('phone')} Call the shop</a>
+      <a class="btn btn-primary navcta magnetic" href="/shop">${ic('bag')} Shop now</a>
       <button class="burger" aria-label="Open menu" aria-expanded="false">${ic('menu')}</button>
     </div>
-    <nav class="mobnav" aria-label="Mobile">${nav}<a href="tel:${BIZ.tel}">Call ${BIZ.phone}</a></nav>
+    <nav class="mobnav" aria-label="Mobile"><a href="/shop">Shop all</a>${nav}<a href="tel:${BIZ.tel}">Call ${BIZ.phone}</a></nav>
   </header>
   <button id="cart-fab" class="cart-fab"></button>
   <div id="cart-drawer" class="drawer-wrap"></div>`;
@@ -121,7 +121,8 @@ function brandmark(){
 
 function footer(){
   const hrs=BIZ.hours.map(h=>`<span class="d">${h[0]}</span><span>${h[1]}</span>`).join('');
-  const depts=DEPTS.map(d=>`<li><a href="/${d.slug}">${d.t}</a></li>`).join('');
+  const depts=[["/shop#new","New arrivals"],["/shop#jewelry","Jewelry"],["/shop#purses","Purses & wallets"],["/shop#hats","Hats"],["/shop#apparel","Apparel & boots"],["/shop#tack","Tack & horse"],["/shop#under-30","Gifts under $30"]]
+    .map(d=>`<li><a href="${d[0]}">${d[1]}</a></li>`).join('');
   return `<div class="wrap">
     <div class="cols">
       <div>
@@ -130,7 +131,7 @@ function footer(){
         <div class="frow">${ic('star')}<span>${BIZ.rating} stars from ${BIZ.reviews} Google reviews</span></div>
       </div>
       <div>
-        <h4>Departments</h4><ul>${depts}</ul>
+        <h4>Shop</h4><ul>${depts}</ul>
       </div>
       <div>
         <h4>Visit the shop</h4>
