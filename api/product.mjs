@@ -70,7 +70,7 @@ o.head + "\n" +
 ".pdp-meta a{color:var(--accent-deep)}\n" +
 ".pdp-back{display:inline-block;margin-top:26px;font:600 14px Inter;color:var(--accent-deep);text-decoration:none}\n" +
 ".pdp-back:hover{text-decoration:underline}\n" +
-"</style>\n<script defer src=\"/_vercel/insights/script.js\"></script>\n</head>\n<body>\n" +
+"</style>\n<script defer src=\"/_vercel/insights/script.js\"></script><script type=\"text/javascript\">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src=\"https://www.clarity.ms/tag/\"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,\"clarity\",\"script\",\"yr6jxvix9a\");</script>\n</head>\n<body>\n" +
 "<div id=\"site-header\"></div>\n" +
 "<main>" + o.body + "</main>\n" +
 "<footer class=\"site\" id=\"site-footer\"></footer>\n" +
